@@ -144,7 +144,7 @@ router.use(function (_req, _res, next) {
   next(err);
 });
 
-router.use(function (err, _req, res, _next) {
+router.use(function (err, _req, res) {
   res.status(err.status || 500);
   res.json({ error: { status: err.status, message: err.message } });
 });
