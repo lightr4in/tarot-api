@@ -117,12 +117,20 @@ router.get("/cards/suits/:suit", (req, res, next) => {
     .status(200);
 });
 
+router.get("/cards/courts", (_req, res) => {
+  const { cards } = res.locals.rawData;
+  const courtCards = cards.filter((c) =>
+    ["queen", "king", "page", "knight"].includes(c.value)
+  );
+  return res.json({ nhits: courtCards.length, cards: courtCards }).status(200);
+});
+
 router.get("/cards/courts/:court", (req, res, next) => {
   const { cards } = res.locals.rawData;
   const { court } = req.params;
   const len = court.length;
-  const courtSg =
-    court.substr(len - 1) === "s" ? court.substr(0, len - 1) : court;
+  if (len < 4) return next();
+  const courtSg = court[len - 1] === "s" ? court.slice(0, len - 1) : court;
   const cardsOfCourt = cards.filter((c) => c.value === courtSg);
   if (!cardsOfCourt.length) return next();
   return res
@@ -143,6 +151,6 @@ router.use(function (err, _req, res, _next) {
 
 const port = process.env.PORT || 8000;
 
-var server = app.listen(port, function () {
+app.listen(port, function () {
   console.log("RWS API Server now running on port", port);
 });
